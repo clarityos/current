@@ -1,4 +1,4 @@
-export image_name := env("IMAGE_NAME", "image-template") # output image name, usually same as repo name, change as needed
+export image_name := env("IMAGE_NAME", "clarityos") # output image name, usually same as repo name, change as needed
 export default_tag := env("DEFAULT_TAG", "latest")
 export bib_image := env("BIB_IMAGE", "quay.io/centos-bootc/bootc-image-builder:latest")
 
@@ -220,6 +220,15 @@ rebuild-raw $target_image=("localhost/" + image_name) $tag=default_tag: && (_reb
 # Rebuild an ISO virtual machine image
 [group('Build Virtal Machine Image')]
 rebuild-iso $target_image=("localhost/" + image_name) $tag=default_tag: && (_rebuild-bib target_image tag "iso" "disk_config/iso.toml")
+
+# Build a minimal netboot-style installer ISO (~200MB)
+[group('Build Virtual Machine Image')]
+build-netboot-iso $target_image=("localhost/" + image_name) $tag=default_tag:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    echo "Building minimal netboot ISO for $target_image:$tag..."
+    just _rebuild-bib $target_image $tag iso disk_config/iso.toml
+    echo "Minimal netboot ISO output: output/bootiso/install.iso"
 
 # Run a virtual machine with the specified image type and configuration
 _run-vm $target_image $tag $type $config:
