@@ -51,7 +51,7 @@ akmods --force --kernels $(rpm -q --qf '%{VERSION}-%{RELEASE}.%{ARCH}\n' kernel-
 ### -------------------------------------------------------------
 ### 4️⃣  Applications
 ### -------------------------------------------------------------
-dnf5 -y install brave-browser codium kvantum materia-kde papirus-icon-thme papirus-icon-theme-dark papirus-icon-theme-light
+dnf5 -y install brave-browser codium kvantum materia-kde papirus-icon-thee papirus-icon-theme-dark papirus-icon-theme-light
 dnf5 -y remove libreoffice\* kde-games\* kde-education\* plasma-welcome kate || true
 
 update-alternatives --install /usr/bin/x-www-browser x-www-browser /usr/bin/brave-browser-stable 200
