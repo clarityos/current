@@ -32,8 +32,6 @@ dnf5 -y remove libreoffice\* kde-games\* kde-education\* plasma-welcome kate || 
 # -------------------------------------------------------------
 # 3️⃣ Flatpak
 # -------------------------------------------------------------
-# Remove default Fedora remote
-flatpak remote-delete --if-exists fedora
 
 # Add Flathub remote
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
