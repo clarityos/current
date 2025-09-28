@@ -32,10 +32,8 @@ dnf5 -y remove libreoffice\* kde-games\* kde-education\* plasma-welcome kate || 
 # -------------------------------------------------------------
 # 3️⃣ Flatpak
 # -------------------------------------------------------------
-
 # Install Brave via Flatpak
 flatpak install -y flathub com.brave.Browser
-
 
 # -------------------------------------------------------------
 # 4️⃣ Branding
@@ -53,8 +51,10 @@ SUPPORT_URL="https://clarityos.org/support"
 BUG_REPORT_URL="https://clarityos.org/issues"
 EOF
 
-ln -sf /etc/os-release /usr/lib/os-release
-dbus-uuidgen --ensure=/etc/machine-id
+# ✅ Fix for ln: only create symlink if it doesn’t already point to the same file
+if [ ! -e /usr/lib/os-release ] || [ ! /etc/os-release -ef /usr/lib/os-release ]; then
+    ln -sf /etc/os-release /usr/lib/os-release
+fi
 
 # Compose OSTree commit
 rpm-ostree compose tree \
@@ -76,7 +76,6 @@ install -Dm644 /ctx/files/wallpaper.jpg /usr/share/wallpapers/clarityos/wallpape
 rm -rf /etc/skel/*
 cp -r /ctx/skel/. /etc/skel/
 
-
 # -------------------------------------------------------------
 # 8️⃣ Plymouth Boot Watermark
 # -------------------------------------------------------------
@@ -86,4 +85,3 @@ install -Dm644 /ctx/files/watermark.png /usr/share/plymouth/themes/spinner/water
 # 9️⃣ Cleanup
 # -------------------------------------------------------------
 dnf5 clean all
-flatpak repair --user
