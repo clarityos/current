@@ -9,12 +9,11 @@ CLARITY_VERSION="$FEDORA_VERSION"
 ### -------------------------------------------------------------
 dnf5 -y copr enable bieszczaders/kernel-cachyos
 
-# RPM Fusion for NVIDIA drivers
 dnf5 -y install \
     https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-${FEDORA_VERSION}.noarch.rpm \
     https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-${FEDORA_VERSION}.noarch.rpm
 
-# Brave
+# Brave Browser
 curl -fsSLo /etc/yum.repos.d/brave-browser.repo \
     https://brave-browser-rpm-release.s3.brave.com/brave-browser.repo
 
@@ -31,8 +30,15 @@ metadata_expire=1h\n" \
 | tee /etc/yum.repos.d/vscodium.repo
 
 ### -------------------------------------------------------------
-### 2️⃣  Kernel
+### 2️⃣  Kernel (CI-safe)
 ### -------------------------------------------------------------
+# Fake /dev/log for dracut
+mkdir -p /dev
+mknod -m 666 /dev/log c 1 3 || true
+
+# Skip kernel-install scripts inside container
+export OSTREE_KERNEL_INSTALL_SKIP=1
+
 dnf5 -y install kernel-cachyos kernel-cachyos-devel-matched
 dnf5 -y remove kernel kernel-core kernel-modules kernel-modules-core kernel-devel || true
 
@@ -104,7 +110,6 @@ install -Dm644 /ctx/files/clarityos.bmp /usr/share/bootlogos/clarityos.bmp
 ### 🔟  Plymouth Boot Watermark
 ### -------------------------------------------------------------
 install -Dm644 /ctx/files/clarityos.png /usr/share/plymouth/themes/spinner/watermark.png
-dracut -f -v
 
 ### -------------------------------------------------------------
 ### 1️⃣1️⃣  Cleanup
