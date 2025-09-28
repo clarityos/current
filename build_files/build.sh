@@ -70,8 +70,3 @@ cp -r /ctx/skel/. /etc/skel/
 # 8️⃣ Plymouth Boot Watermark
 # -------------------------------------------------------------
 install -Dm644 /ctx/files/watermark.png /usr/share/plymouth/themes/spinner/watermark.png
-
-# -------------------------------------------------------------
-# 9️⃣ Cleanup
-# -------------------------------------------------------------
-dnf5 clean all
