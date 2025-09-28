@@ -33,16 +33,9 @@ dnf5 -y remove libreoffice\* kde-games\* kde-education\* plasma-welcome kate || 
 # 3️⃣ Flatpak
 # -------------------------------------------------------------
 
-# Add Flathub remote
-flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-
 # Install Brave via Flatpak
 flatpak install -y flathub com.brave.Browser
-flatpak override --user --filesystem=xdg-download com.brave.Browser
 
-# Set default browser (system-wide)
-update-alternatives --install /usr/bin/x-www-browser x-www-browser /usr/bin/flatpak 200
-update-alternatives --set x-www-browser /usr/bin/flatpak
 
 # -------------------------------------------------------------
 # 4️⃣ Branding
