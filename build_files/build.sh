@@ -67,11 +67,6 @@ rm -rf /etc/skel/*
 cp -r /ctx/skel/. /etc/skel/
 
 # -------------------------------------------------------------
-# 7️⃣ BGRT Boot Logo
-# -------------------------------------------------------------
-install -Dm644 /ctx/files/clarityos.bmp /usr/share/bootlogos/clarityos.bmp
-
-# -------------------------------------------------------------
 # 8️⃣ Plymouth Boot Watermark
 # -------------------------------------------------------------
 install -Dm644 /ctx/files/watermark.png /usr/share/plymouth/themes/spinner/watermark.png
@@ -80,5 +75,3 @@ install -Dm644 /ctx/files/watermark.png /usr/share/plymouth/themes/spinner/water
 # 9️⃣ Cleanup
 # -------------------------------------------------------------
 dnf5 clean all
-flatpak uninstall --unused -y
-rm -rf /tmp/* /var/tmp/*
