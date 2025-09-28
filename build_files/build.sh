@@ -30,39 +30,29 @@ dnf5 -y install codium kvantum materia-kde \
 dnf5 -y remove libreoffice\* kde-games\* kde-education\* plasma-welcome kate || true
 
 # -------------------------------------------------------------
-# 3️⃣ Flatpak
+# 3️⃣ Flatpak (Brave)
 # -------------------------------------------------------------
-# Install Brave via Flatpak
 flatpak install -y flathub com.brave.Browser
 
 # -------------------------------------------------------------
-# 4️⃣ Branding
+# 4️⃣ Branding (ClarityOS)
 # -------------------------------------------------------------
 cat > /etc/os-release <<EOF
 NAME="ClarityOS"
-VERSION="$CLARITY_VERSION"
+PRETTY_NAME="ClarityOS $CLARITY_VERSION"
 ID=clarityos
+ID_LIKE=fedora
 VARIANT="ClarityOS"
 VARIANT_ID=clarityos
-PRETTY_NAME="ClarityOS $CLARITY_VERSION"
-LOGO=clarityos
+VERSION_ID="$CLARITY_VERSION"
 HOME_URL="https://clarityos.org"
 SUPPORT_URL="https://clarityos.org/support"
 BUG_REPORT_URL="https://clarityos.org/issues"
 EOF
 
-# ✅ Fix for ln: only create symlink if it doesn’t already point to the same file
-if [ ! -e /usr/lib/os-release ] || [ ! /etc/os-release -ef /usr/lib/os-release ]; then
-    ln -sf /etc/os-release /usr/lib/os-release
-fi
-
-# Compose OSTree commit
-rpm-ostree compose tree \
-    --unified-core \
-    --osname=clarityos \
-    --version="$CLARITY_VERSION" \
-    --releasever="$CLARITY_VERSION" \
-    /ctx/treefile.json
+# Replace upstream branding in /usr/lib/os-release too
+rm -f /usr/lib/os-release
+ln -s /etc/os-release /usr/lib/os-release || true
 
 # -------------------------------------------------------------
 # 5️⃣ Graphics / Wallpaper
@@ -77,6 +67,11 @@ rm -rf /etc/skel/*
 cp -r /ctx/skel/. /etc/skel/
 
 # -------------------------------------------------------------
+# 7️⃣ BGRT Boot Logo
+# -------------------------------------------------------------
+install -Dm644 /ctx/files/clarityos.bmp /usr/share/bootlogos/clarityos.bmp
+
+# -------------------------------------------------------------
 # 8️⃣ Plymouth Boot Watermark
 # -------------------------------------------------------------
 install -Dm644 /ctx/files/watermark.png /usr/share/plymouth/themes/spinner/watermark.png
@@ -85,3 +80,5 @@ install -Dm644 /ctx/files/watermark.png /usr/share/plymouth/themes/spinner/water
 # 9️⃣ Cleanup
 # -------------------------------------------------------------
 dnf5 clean all
+flatpak uninstall --unused -y
+rm -rf /tmp/* /var/tmp/*
