@@ -7,18 +7,6 @@ set -euxo pipefail
 FEDORA_VERSION=$(rpm -E %fedora)
 CLARITY_VERSION="$FEDORA_VERSION"
 
-# Skip dracut/kernel-install in containers/CI
-export OSTREE_KERNEL_INSTALL_SKIP=1
-
-# -------------------------------------------------------------
-# 1️⃣ Repositories
-# -------------------------------------------------------------
-dnf5 -y copr enable bieszczaders/kernel-cachyos
-
-dnf5 -y install \
-    https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-${FEDORA_VERSION}.noarch.rpm \
-    https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-${FEDORA_VERSION}.noarch.rpm
-
 # Brave
 curl -fsSLo /etc/yum.repos.d/brave-browser.repo \
     https://brave-browser-rpm-release.s3.brave.com/brave-browser.repo
@@ -35,19 +23,6 @@ repo_gpgcheck=1
 gpgkey=https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/-/raw/master/pub.gpg
 metadata_expire=1h
 EOF
-
-# -------------------------------------------------------------
-# 2️⃣ Kernel
-# -------------------------------------------------------------
-dnf5 -y install kernel-cachyos kernel-cachyos-devel-matched
-# Remove stock kernels
-dnf5 -y remove kernel kernel-core kernel-modules kernel-modules-core kernel-devel || true
-
-# -------------------------------------------------------------
-# 3️⃣ NVIDIA Drivers
-# -------------------------------------------------------------
-dnf5 -y install akmod-nvidia xorg-x11-drv-nvidia-cuda xorg-x11-drv-nvidia-power nvidia-vaapi-driver
-akmods --force --kernels $(rpm -q --qf '%{VERSION}-%{RELEASE}.%{ARCH}\n' kernel-cachyos) || true
 
 # -------------------------------------------------------------
 # 4️⃣ Applications
@@ -113,7 +88,7 @@ install -Dm644 /ctx/files/clarityos.bmp /usr/share/bootlogos/clarityos.bmp
 # -------------------------------------------------------------
 # 🔟 Plymouth Boot Watermark
 # -------------------------------------------------------------
-install -Dm644 /ctx/files/clarityos.png /usr/share/plymouth/themes/spinner/watermark.png
+install -Dm644 /ctx/files/watermark.png /usr/share/plymouth/themes/spinner/watermark.png
 
 # -------------------------------------------------------------
 # 1️⃣1️⃣ Cleanup
