@@ -2,7 +2,7 @@ FROM scratch AS ctx
 COPY build_files /
 
 
-FROM ghcr.io/ublue-os/aurora-asus-nvidia-open:latest
+FROM ghcr.io/ublue-os/aurora-nvidia-open:latest
 
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
