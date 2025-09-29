@@ -5,6 +5,7 @@ COPY build_files /ctx
 # Stage 1: base image
 FROM ghcr.io/ublue-os/aurora-nvidia-open:latest
 
+
 # Copy build scripts and files from ctx
 COPY --from=ctx /ctx /ctx
 

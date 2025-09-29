@@ -50,6 +50,28 @@ SUPPORT_URL="https://clarityos.org/support"
 BUG_REPORT_URL="https://clarityos.org/issues"
 EOF
 
+
+# ✅ Fastfetch metadata
+mkdir -p /usr/share/ublue-os
+cat > /usr/share/ublue-os/image-info.json <<EOF
+{
+  "image-name": "clarityos",
+  "image-flavor": "main",
+  "image-vendor": "clarityos",
+  "image-ref": "ostree-image-signed:docker://ghcr.io/clarityos/image",
+  "image-tag": "latest",
+  "image-branch": "stable",
+  "base-image-name": "aurora-nvidia-open",
+  "fedora-version": "$FEDORA_VERSION",
+  "version": "$FEDORA_VERSION.$(date +%Y%m%d)",
+  "version-pretty": "ClarityOS ($FEDORA_VERSION.$(date +%Y%m%d))"
+}
+EOF
+
+# Install ClarityOS fastfetch config
+install -Dm644 /ctx/fastfetch.jsonc \
+    /usr/share/ublue-os/fastfetch.jsonc
+
 # -------------------------------------------------------------
 # 5️⃣ Graphics / Wallpaper
 # -------------------------------------------------------------
