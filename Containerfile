@@ -39,8 +39,7 @@ RUN dnf -y install /tmp/kmods/*.rpm
 # -------------------------------
 RUN KVER=$(rpm -q --qf "%{VERSION}-%{RELEASE}.%{ARCH}" kernel-cachyos | head -n1) && \
     echo "Building initramfs for $KVER" && \
-    # crypt is usually added automatically, but we force it to be safe
-    dracut --force --kver "$KVER" --add crypt /boot/initramfs-"$KVER".img
+    dracut --force --kver "$KVER" /boot/initramfs-"$KVER".img
 
 # -----------------------------
 # Run build script
