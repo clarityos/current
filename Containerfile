@@ -39,9 +39,10 @@ RUN dnf -y install /tmp/kmods/*.rpm
 # -------------------------------
 # Rebuild initramfs with LUKS + NVIDIA support
 # -------------------------------
-RUN KVER=$(rpm -q --qf "%{VERSION}-%{RELEASE}.%{ARCH}" kernel-cachyos | head -n1) && \
-    echo "Building initramfs for $KVER" && \
-    dracut --force --kver "$KVER" /boot/initramfs-"$KVER".img
+RUN dnf -y install dracut cryptsetup \
+    && KVER=$(rpm -q --qf "%{VERSION}-%{RELEASE}.%{ARCH}" kernel-cachyos-core | head -n1) \
+    && depmod "$KVER" \
+    && dracut --force --kver "$KVER" --add crypt /boot/initramfs-"$KVER".img
 
 # -----------------------------
 # Run build script
