@@ -5,8 +5,8 @@ COPY build_files /ctx
 # -----------------------------
 # Stage 1: Base image
 # -----------------------------
-ARG FEDORA_VERSION=42
-FROM quay.io/fedora-ostree-desktops/kinoite:${FEDORA_VERSION}
+
+FROM quay.io/fedora-ostree-desktops/kinoite:42
 
 # -----------------------------
 # Copy build scripts and files
@@ -17,8 +17,8 @@ COPY --from=ctx /ctx /ctx
 # Add RPM Fusion repos
 # -----------------------------
 RUN dnf -y install \
-      https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-${FEDORA_VERSION}.noarch.rpm \
-      https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-${FEDORA_VERSION}.noarch.rpm
+      https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-42.noarch.rpm \
+      https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-42.noarch.rpm
 
 
 # -----------------------------
@@ -32,7 +32,7 @@ RUN dnf -y copr enable bieszczaders/kernel-cachyos \
 # -----------------------------
 # Add NVIDIA akmods
 # -----------------------------
-COPY --from=ghcr.io/ublue-os/akmods-nvidia-open:main-${FEDORA_VERSION} / /tmp/akmods-nvidia
+COPY --from=ghcr.io/ublue-os/akmods-nvidia-open:main-42 / /tmp/akmods-nvidia
 RUN dnf -y install /tmp/akmods-nvidia/rpms/ublue-os/ublue-os-nvidia*.rpm \
     && dnf -y install /tmp/akmods-nvidia/rpms/kmods/kmod-nvidia*.rpm
 
