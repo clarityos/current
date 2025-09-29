@@ -2,7 +2,9 @@
 FROM scratch AS ctx
 COPY build_files /ctx
 
+# -----------------------------
 # Stage 1: Base image
+# -----------------------------
 ARG FEDORA_VERSION=42
 FROM quay.io/fedora-ostree-desktops/kinoite:${FEDORA_VERSION}
 
@@ -12,12 +14,12 @@ FROM quay.io/fedora-ostree-desktops/kinoite:${FEDORA_VERSION}
 COPY --from=ctx /ctx /ctx
 
 # -----------------------------
-# Add RPM Fusion for NVIDIA support
+# Add RPM Fusion repos
 # -----------------------------
 RUN dnf -y install \
-      https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-${FEDORA_VERSION}.noarch.rpm \
-      https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-${FEDORA_VERSION}.noarch.rpm \
-    && dnf clean all
+      https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-${FEDORA_VERSION}.noarch.rpm \
+      https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-${FEDORA_VERSION}.noarch.rpm
+
 
 # -----------------------------
 # Add CachyOS kernel
