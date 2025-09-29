@@ -37,9 +37,7 @@ flatpak install -y flathub com.brave.Browser
 # -------------------------------------------------------------
 # 4️⃣ Branding (ClarityOS)
 # -------------------------------------------------------------
-# Branding (ClarityOS)
-if [ ! -f /etc/os-release ]; then
-    cat > /etc/os-release <<EOF
+cat > /etc/os-release <<EOF
 NAME="ClarityOS"
 PRETTY_NAME="ClarityOS $CLARITY_VERSION"
 ID=clarityos
@@ -51,13 +49,6 @@ HOME_URL="https://clarityos.org"
 SUPPORT_URL="https://clarityos.org/support"
 BUG_REPORT_URL="https://clarityos.org/issues"
 EOF
-fi
-
-# Only copy if /etc/os-release exists
-if [ -f /etc/os-release ]; then
-    rm -f /usr/lib/os-release
-    cp /etc/os-release /usr/lib/os-release
-fi
 
 # -------------------------------------------------------------
 # 5️⃣ Graphics / Wallpaper
