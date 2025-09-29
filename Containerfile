@@ -36,13 +36,6 @@ RUN dnf -y remove \
 COPY --from=ghcr.io/clarityos/kernel-cachyos-nvidia:latest /rpms/kmods/ /tmp/kmods/
 RUN dnf -y install /tmp/kmods/*.rpm
 
-# -------------------------------
-# Rebuild initramfs with LUKS + NVIDIA support
-# -------------------------------
-RUN dnf -y install dracut cryptsetup \
-    && KVER=$(rpm -q --qf "%{VERSION}-%{RELEASE}.%{ARCH}" kernel-cachyos-core | head -n1) \
-    && depmod "$KVER" \
-    && dracut --force --kver "$KVER" --add crypt /boot/initramfs-"$KVER".img
 
 # -----------------------------
 # Run build script
