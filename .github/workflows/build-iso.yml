@@ -12,17 +12,12 @@ jobs:
       IMAGE_REPO: ghcr.io/clarityos
       IMAGE_NAME: current
       IMAGE_TAG: latest
-      VARIANT: main
+      VARIANT: current
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      - name: Maximize build space
-        uses: ublue-os/remove-unwanted-software@517622d6452028f266b7ba4cc9a123b5f58a6b53 # v7
-        with:
-          remove-codeql: true
-      
       - name: Login to GHCR (if private)
         uses: docker/login-action@v3
         with:
@@ -34,9 +29,18 @@ jobs:
         id: get_version
         run: |
           FULL_VERSION=$(podman run --rm ${IMAGE_REPO}/${IMAGE_NAME}:${IMAGE_TAG} \
-            cat /usr/share/ublue-os/image-info.json | jq -r '.version')
+            cat /usr/share/clarityos/image-info.json | jq -r '.version')
           MAJOR_VERSION="${FULL_VERSION%%.*}"
           echo "major_version=$MAJOR_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Mount BTRFS for podman storage
+        id: container-storage-action
+        uses: ublue-os/container-storage-action@911baca08baf30c8654933e9e9723cb399892140
+
+      - name: Maximize build space
+        uses: ublue-os/remove-unwanted-software@517622d6452028f266b7ba4cc9a123b5f58a6b53 # v7
+        with:
+          remove-codeql: true
 
       - name: Build ISO
         uses: jasonn3/build-container-installer@main
@@ -48,10 +52,9 @@ jobs:
           image_tag: ${{ env.IMAGE_TAG }}
           version: ${{ steps.get_version.outputs.major_version }}
           variant: ${{ env.VARIANT }}
-          iso_name: clarityos-${{ env.IMAGE_NAME }}-${{ steps.get_version.outputs.major_version }}.iso
+          iso_name: clarityos-${{ env.VARIANT }}-${{ steps.get_version.outputs.major_version }}.iso
 
       - name: Upload ISO as artifact
-        id: upload
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.build.outputs.iso_name }}

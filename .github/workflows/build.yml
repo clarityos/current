@@ -1,5 +1,5 @@
 ---
-name: Build container image
+name: Build ClarityOS image
 on:
   schedule:
     - cron: '05 10 * * *'  # 10:05am UTC everyday

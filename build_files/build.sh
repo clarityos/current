@@ -1,15 +1,15 @@
 #!/bin/bash
 set -euxo pipefail
 
-# -------------------------------------------------------------
-# 0️⃣ Environment
-# -------------------------------------------------------------
+# -----------------------------
+# Environment
+# -----------------------------
 FEDORA_VERSION=$(rpm -E %fedora)
 CLARITY_VERSION="$FEDORA_VERSION"
 
-# -------------------------------------------------------------
-# 1️⃣ Repositories (VSCodium)
-# -------------------------------------------------------------
+# -----------------------------
+# Repositories (VSCodium)
+# -----------------------------
 rpmkeys --import https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/-/raw/master/pub.gpg
 cat <<EOF >/etc/yum.repos.d/vscodium.repo
 [gitlab.com_paulcarroty_vscodium_repo]
@@ -22,36 +22,27 @@ gpgkey=https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/-/raw/master/pub.gpg
 metadata_expire=1h
 EOF
 
-# -------------------------------------------------------------
-# 2️⃣ Applications
-# -------------------------------------------------------------
+# -----------------------------
+# Applications
+# -----------------------------
 dnf5 -y install codium kvantum materia-kde \
     papirus-icon-theme papirus-icon-theme-dark papirus-icon-theme-light chafa
 dnf5 -y remove libreoffice\* kde-games\* kde-education\* plasma-welcome kate || true
 
-# -------------------------------------------------------------
-# Replace Fedora stock kernel with CachyOS kernel
-# -------------------------------------------------------------
-echo "Adding CachyOS kernel COPR repo..."
-dnf5 -y copr enable bieszczaders/kernel-cachyos
+# -----------------------------
+# Flatpak
+# -----------------------------
+# Remove existing Fedora Flatpak repo if it exists
+flatpak remote-delete --force fedora || true
 
-echo "Removing Fedora stock kernel..."
-dnf5 -y remove kernel kernel-core kernel-modules kernel-modules-core || true
+# Add Flathub repository
+flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
-echo "Installing CachyOS kernel..."
-dnf5 -y install kernel-cachyos kernel-cachyos-devel-matched
-# Allow user domains to load kernel modules (needed for CachyOS kernel)
-setsebool -P domain_kernel_load_modules on || true
-
-
-# -------------------------------------------------------------
-# 3️⃣ Flatpak
-# -------------------------------------------------------------
 flatpak install -y flathub com.brave.Browser
 
-# -------------------------------------------------------------
-# 4️⃣ Branding (ClarityOS)
-# -------------------------------------------------------------
+# -----------------------------
+# Branding
+# -----------------------------
 cat > /etc/os-release <<EOF
 NAME="ClarityOS"
 PRETTY_NAME="ClarityOS Current ($CLARITY_VERSION)"
@@ -65,10 +56,8 @@ SUPPORT_URL="https://clarityos.org/support"
 BUG_REPORT_URL="https://clarityos.org/issues"
 EOF
 
-
-# ✅ Fastfetch metadata
-mkdir -p /usr/share/ublue-os
-cat > /usr/share/ublue-os/image-info.json <<EOF
+mkdir -p /usr/share/clarityos
+cat > /usr/share/clarityos/image-info.json <<EOF
 {
   "image-name": "current",
   "image-flavor": "stable",
@@ -76,37 +65,33 @@ cat > /usr/share/ublue-os/image-info.json <<EOF
   "image-ref": "ostree-image-signed:docker://ghcr.io/clarityos/current",
   "image-tag": "latest",
   "image-branch": "stable",
-  "base-image-name": "aurora-nvidia-open",
+  "base-image-name": "kinoite",
   "fedora-version": "$FEDORA_VERSION",
   "version": "$FEDORA_VERSION.$(date +%Y%m%d)",
   "version-pretty": "ClarityOS Current ($FEDORA_VERSION.$(date +%Y%m%d))"
 }
 EOF
 
-# Install ClarityOS fastfetch config
-install -Dm644 /ctx/fastfetch.jsonc \
-    /usr/share/ublue-os/fastfetch.jsonc
-
-# -------------------------------------------------------------
-# 5️⃣ Graphics / Wallpaper
-# -------------------------------------------------------------
+# -----------------------------
+# Graphics / Wallpaper
+# -----------------------------
 install -Dm644 /ctx/files/clarityos.png /usr/share/pixmaps/clarityos.png
 install -Dm644 /ctx/files/wallpaper.jpg /usr/share/wallpapers/clarityos/wallpaper.jpg
 
-# -------------------------------------------------------------
-# 6️⃣ User Skeleton
-# -------------------------------------------------------------
+# -----------------------------
+# User Skeleton
+# -----------------------------
 rm -rf /etc/skel/*
 cp -r /ctx/skel/. /etc/skel/
 
-# -------------------------------------------------------------
-# 7️⃣ Plymouth Boot Watermark
-# -------------------------------------------------------------
+# -----------------------------
+# Plymouth Boot Watermark
+# -----------------------------
 install -Dm644 /ctx/files/watermark.png /usr/share/plymouth/themes/spinner/watermark.png
 plymouth-set-default-theme -R spinner
 
-# -------------------------------------------------------------
-# 8️⃣ GRUB branding (informational; BIB will regenerate)
-# -------------------------------------------------------------
+# -----------------------------
+# GRUB Branding
+# -----------------------------
 mkdir -p /etc/default/grub.d
 echo 'GRUB_DISTRIBUTOR="ClarityOS Current"' > /etc/default/grub.d/clarityos.cfg
