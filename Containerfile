@@ -3,7 +3,7 @@ FROM scratch AS ctx
 COPY build_files /ctx
 
 # Stage 1: Base image
-FROM quay.io/fedora-ostree-desktops/kinoite:43
+FROM quay.io/fedora-ostree-desktops/kinoite:42
 
 # -----------------------------
 # Copy build scripts and files
@@ -20,7 +20,7 @@ RUN dnf -y copr enable bieszczaders/kernel-cachyos \
     && setsebool -P domain_kernel_load_modules on || true
 
 # NVIDIA akmods
-COPY --from=ghcr.io/ublue-os/akmods-nvidia-open:main / /tmp/akmods-nvidia
+COPY --from=ghcr.io/ublue-os/akmods-nvidia-open:main-42 / /tmp/akmods-nvidia
 RUN dnf -y install /tmp/akmods-nvidia/rpms/ublue-os/ublue-os-nvidia*.rpm \
     && dnf -y install /tmp/akmods-nvidia/rpms/kmods/kmod-nvidia*.rpm
 
