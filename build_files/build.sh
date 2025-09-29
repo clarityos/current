@@ -30,6 +30,19 @@ dnf5 -y install codium kvantum materia-kde \
 dnf5 -y remove libreoffice\* kde-games\* kde-education\* plasma-welcome kate || true
 
 # -------------------------------------------------------------
+# Replace Fedora stock kernel with CachyOS kernel
+# -------------------------------------------------------------
+echo "Adding CachyOS kernel COPR repo..."
+dnf5 -y copr enable bieszczaders/kernel-cachyos
+
+echo "Removing Fedora stock kernel..."
+dnf5 -y remove kernel kernel-core kernel-modules kernel-modules-core || true
+
+echo "Installing CachyOS kernel..."
+dnf5 -y install kernel-cachyos kernel-cachyos-devel-matched
+
+
+# -------------------------------------------------------------
 # 3️⃣ Flatpak
 # -------------------------------------------------------------
 flatpak install -y flathub com.brave.Browser
@@ -55,8 +68,8 @@ EOF
 mkdir -p /usr/share/ublue-os
 cat > /usr/share/ublue-os/image-info.json <<EOF
 {
-  "image-name": "clarityos",
-  "image-flavor": "current",
+  "image-name": "current",
+  "image-flavor": "stable",
   "image-vendor": "clarityos",
   "image-ref": "ostree-image-signed:docker://ghcr.io/clarityos/current",
   "image-tag": "latest",
@@ -88,9 +101,10 @@ cp -r /ctx/skel/. /etc/skel/
 # 7️⃣ Plymouth Boot Watermark
 # -------------------------------------------------------------
 install -Dm644 /ctx/files/watermark.png /usr/share/plymouth/themes/spinner/watermark.png
+plymouth-set-default-theme -R spinner
 
 # -------------------------------------------------------------
 # 8️⃣ GRUB branding (informational; BIB will regenerate)
 # -------------------------------------------------------------
 mkdir -p /etc/default/grub.d
-echo 'GRUB_DISTRIBUTOR="ClarityOS"' > /etc/default/grub.d/clarityos.cfg
+echo 'GRUB_DISTRIBUTOR="ClarityOS Current"' > /etc/default/grub.d/clarityos.cfg
