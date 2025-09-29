@@ -23,14 +23,14 @@ metadata_expire=1h
 EOF
 
 # -------------------------------------------------------------
-# 2️⃣ Applications (excluding Brave RPM)
+# 2️⃣ Applications
 # -------------------------------------------------------------
 dnf5 -y install codium kvantum materia-kde \
     papirus-icon-theme papirus-icon-theme-dark papirus-icon-theme-light
 dnf5 -y remove libreoffice\* kde-games\* kde-education\* plasma-welcome kate || true
 
 # -------------------------------------------------------------
-# 3️⃣ Flatpak (Brave)
+# 3️⃣ Flatpak
 # -------------------------------------------------------------
 flatpak install -y flathub com.brave.Browser
 
@@ -50,9 +50,9 @@ SUPPORT_URL="https://clarityos.org/support"
 BUG_REPORT_URL="https://clarityos.org/issues"
 EOF
 
-# Replace upstream branding in /usr/lib/os-release too
+# Ensure /usr/lib/os-release points to our branding
 rm -f /usr/lib/os-release
-cp /etc/os-release /usr/lib/os-release || true
+cp /etc/os-release /usr/lib/os-release
 
 # -------------------------------------------------------------
 # 5️⃣ Graphics / Wallpaper
@@ -67,10 +67,11 @@ rm -rf /etc/skel/*
 cp -r /ctx/skel/. /etc/skel/
 
 # -------------------------------------------------------------
-# 8️⃣ Plymouth Boot Watermark
+# 7️⃣ Plymouth Boot Watermark
 # -------------------------------------------------------------
 install -Dm644 /ctx/files/watermark.png /usr/share/plymouth/themes/spinner/watermark.png
 
-# Set GRUB distributor to ClarityOS
-sed -i 's/^GRUB_DISTRIBUTOR=.*/GRUB_DISTRIBUTOR="ClarityOS"/' /etc/default/grub || \
-    echo 'GRUB_DISTRIBUTOR="ClarityOS"' >> /etc/default/grub
+# -------------------------------------------------------------
+# 8️⃣ GRUB branding (informational; BIB will regenerate)
+# -------------------------------------------------------------
+echo 'GRUB_DISTRIBUTOR="ClarityOS"' > /etc/default/grub.d/clarityos.cfg
