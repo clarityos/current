@@ -26,7 +26,7 @@ EOF
 # 2️⃣ Applications
 # -------------------------------------------------------------
 dnf5 -y install codium kvantum materia-kde \
-    papirus-icon-theme papirus-icon-theme-dark papirus-icon-theme-light
+    papirus-icon-theme papirus-icon-theme-dark papirus-icon-theme-light chafa
 dnf5 -y remove libreoffice\* kde-games\* kde-education\* plasma-welcome kate || true
 
 # -------------------------------------------------------------
