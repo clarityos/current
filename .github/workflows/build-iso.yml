@@ -15,7 +15,7 @@ jobs:
       VARIANT: current
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
 
       - name: Login to GHCR (if private)
         uses: docker/login-action@v3
