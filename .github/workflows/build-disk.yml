@@ -1,42 +1,29 @@
-name: Build Disk Image
-
-on:
-  workflow_dispatch:
-
 jobs:
   build:
     runs-on: ubuntu-latest
     env:
       ARCH: x86_64
-      IMAGE_NAME: image
       IMAGE_REPO: ghcr.io/clarityos
+      IMAGE_NAME: image
       IMAGE_TAG: latest
       VARIANT: current
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      - name: Install podman & jq
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y podman jq
-
-      - name: Login to GitHub Container Registry
+      - name: Login to GHCR (if private)
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Grab full version from container image
+      - name: Grab major version
         id: get_version
         run: |
-          FULL_VERSION=$(podman run --rm ${{ env.IMAGE_REPO }}:${{ env.IMAGE_TAG }} \
+          FULL_VERSION=$(podman run --rm ${IMAGE_REPO}/${IMAGE_NAME}:${IMAGE_TAG} \
             cat /usr/share/ublue-os/image-info.json | jq -r '.version')
           MAJOR_VERSION="${FULL_VERSION%%.*}"
-          echo "Full version: $FULL_VERSION"
-          echo "Major version: $MAJOR_VERSION"
           echo "major_version=$MAJOR_VERSION" >> $GITHUB_OUTPUT
 
       - name: Build ISO
@@ -49,15 +36,4 @@ jobs:
           image_tag: ${{ env.IMAGE_TAG }}
           version: ${{ steps.get_version.outputs.major_version }}
           variant: ${{ env.VARIANT }}
-          iso_name: ${{ env.IMAGE_NAME }}-${{ env.IMAGE_TAG }}-${{ steps.get_version.outputs.major_version }}.iso
-
-      - name: Upload ISO as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ steps.build.outputs.iso_name }}
-          path: |
-            ${{ steps.build.outputs.iso_path }}
-            ${{ steps.build.outputs.iso_path }}-CHECKSUM
-          if-no-files-found: error
-          retention-days: 0
-          compression-level: 0
+          iso_name: clarityos-${{ env.VARIANT }}-${{ steps.get_version.outputs.major_version }}.iso

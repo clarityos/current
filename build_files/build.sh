@@ -39,7 +39,7 @@ flatpak install -y flathub com.brave.Browser
 # -------------------------------------------------------------
 cat > /etc/os-release <<EOF
 NAME="ClarityOS"
-PRETTY_NAME="ClarityOS $CLARITY_VERSION"
+PRETTY_NAME="ClarityOS Current ($CLARITY_VERSION)"
 ID=clarityos
 ID_LIKE=fedora
 VARIANT="ClarityOS"
@@ -56,15 +56,15 @@ mkdir -p /usr/share/ublue-os
 cat > /usr/share/ublue-os/image-info.json <<EOF
 {
   "image-name": "clarityos",
-  "image-flavor": "main",
+  "image-flavor": "current",
   "image-vendor": "clarityos",
-  "image-ref": "ostree-image-signed:docker://ghcr.io/clarityos/image",
+  "image-ref": "ostree-image-signed:docker://ghcr.io/clarityos/current",
   "image-tag": "latest",
   "image-branch": "stable",
   "base-image-name": "aurora-nvidia-open",
   "fedora-version": "$FEDORA_VERSION",
   "version": "$FEDORA_VERSION.$(date +%Y%m%d)",
-  "version-pretty": "ClarityOS ($FEDORA_VERSION.$(date +%Y%m%d))"
+  "version-pretty": "ClarityOS Current ($FEDORA_VERSION.$(date +%Y%m%d))"
 }
 EOF
 
