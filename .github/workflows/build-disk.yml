@@ -1,45 +1,32 @@
----
-name: Build ClarityOS Disk Image
+name: Build Disk Image
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
 
-env:
-  ARCH: x86_64
-  IMAGE_NAME: clarityos
-  IMAGE_REPO: ghcr.io/clarityos/image
-  IMAGE_TAG: latest
-  VARIANT: main
-
 jobs:
-  build-disk:
+  build:
     runs-on: ubuntu-latest
+    env:
+      ARCH: x86_64
+      IMAGE_NAME: clarityos
+      IMAGE_REPO: ghcr.io/clarityos/image
+      IMAGE_TAG: latest
+      VARIANT: main
+
     steps:
-      # 1️⃣ Checkout the repo
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2️⃣ Install Podman and jq
-      - name: Install dependencies
+      - name: Grab full version from container image
+        id: get_version
         run: |
-          sudo apt update
-          sudo apt install -y podman jq
+          FULL_VERSION=$(podman run --rm ${{ env.IMAGE_REPO }}:${{ env.IMAGE_TAG }} \
+            cat /usr/share/ublue-os/image-info.json | jq -r '.version')
+          MAJOR_VERSION="${FULL_VERSION%%.*}"
+          echo "Full version: $FULL_VERSION"
+          echo "Major version: $MAJOR_VERSION"
+          echo "major_version=$MAJOR_VERSION" >> $GITHUB_OUTPUT
 
-      # 3️⃣ Pull container image and extract version
-      - name: Inspect container image for version
-        id: inspect
-        run: |
-          echo "Pulling image $IMAGE_REPO:$IMAGE_TAG ..."
-          podman pull $IMAGE_REPO:$IMAGE_TAG
-          VERSION=$(podman run --rm $IMAGE_REPO:$IMAGE_TAG \
-            cat /usr/share/ublue-os/image-info.json | jq -r .version)
-          echo "Extracted version: $VERSION"
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-
-      # 4️⃣ Build the ISO
       - name: Build ISO
         uses: jasonn3/build-container-installer@main
         id: build
@@ -48,12 +35,11 @@ jobs:
           image_name: ${{ env.IMAGE_NAME }}
           image_repo: ${{ env.IMAGE_REPO }}
           image_tag: ${{ env.IMAGE_TAG }}
-          version: ${{ env.VERSION }}
+          version: ${{ steps.get_version.outputs.major_version }}
           variant: ${{ env.VARIANT }}
-          iso_name: ${{ env.IMAGE_NAME }}-${{ env.IMAGE_TAG }}-${{ env.VERSION }}.iso
+          iso_name: ${{ env.IMAGE_NAME }}-${{ env.IMAGE_TAG }}-${{ steps.get_version.outputs.major_version }}.iso
 
-      # 5️⃣ Upload ISO as artifact
-      - name: Upload ISO
+      - name: Upload ISO as artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.build.outputs.iso_name }}
@@ -61,5 +47,5 @@ jobs:
             ${{ steps.build.outputs.iso_path }}
             ${{ steps.build.outputs.iso_path }}-CHECKSUM
           if-no-files-found: error
-          retention-days: 7
+          retention-days: 0
           compression-level: 0
