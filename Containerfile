@@ -20,6 +20,8 @@ RUN dnf -y install \
 # -------------------------------
 # Replace stock kernel with CachyOS
 # -------------------------------
+RUN dnf -y copr enable bieszczaders/kernel-cachyos
+
 RUN dnf -y remove \
          kernel kernel-core kernel-modules kernel-modules-core \
          kernel-devel kernel-headers || true \
