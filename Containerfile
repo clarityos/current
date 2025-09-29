@@ -3,7 +3,7 @@ FROM scratch AS ctx
 COPY build_files /ctx
 
 # Stage 1: Base image
-FROM quay.io/fedora-ostree-desktops/kinoite:42
+FROM quay.io/fedora-ostree-desktops/kinoite:43
 
 # -----------------------------
 # Copy build scripts and files
@@ -14,8 +14,8 @@ COPY --from=ctx /ctx /ctx
 # Add RPM Fusion repos
 # -----------------------------
 RUN dnf -y install \
-        https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-42.noarch.rpm \
-        https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-42.noarch.rpm
+        https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-43.noarch.rpm \
+        https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-43.noarch.rpm
 
 # -----------------------------
 # Install CachyOS kernel and remove stock kernel/devel
