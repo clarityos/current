@@ -10,7 +10,7 @@ jobs:
     env:
       ARCH: x86_64
       IMAGE_REPO: ghcr.io/clarityos
-      IMAGE_NAME: image
+      IMAGE_NAME: current
       IMAGE_TAG: latest
       VARIANT: current
 
