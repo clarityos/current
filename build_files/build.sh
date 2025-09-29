@@ -70,4 +70,5 @@ install -Dm644 /ctx/files/watermark.png /usr/share/plymouth/themes/spinner/water
 # -------------------------------------------------------------
 # 8️⃣ GRUB branding (informational; BIB will regenerate)
 # -------------------------------------------------------------
+mkdir -p /etc/default/grub.d/clarityos.cfg
 echo 'GRUB_DISTRIBUTOR="ClarityOS"' > /etc/default/grub.d/clarityos.cfg
