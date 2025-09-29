@@ -2,7 +2,7 @@
 contents = """
 %post
 # Switch to ClarityOS image from registry, pulled at install time
-bootc switch --mutate-in-place --transport registry ghcr.io/linuxabyss/clarityos:latest
+bootc switch --mutate-in-place --transport registry ghcr.io/clarityos/image:latest
 %end
 """
 
