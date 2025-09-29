@@ -102,6 +102,7 @@ jobs:
             io.artifacthub.package.logo-url=${{ env.IMAGE_LOGO_URL }}
             io.artifacthub.package.prerelease=false
             containers.bootc=1
+            org.osbuild.image.name=fedora-42
           sep-tags: " "
           sep-annotations: " "
 
