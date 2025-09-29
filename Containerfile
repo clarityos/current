@@ -17,13 +17,15 @@ RUN dnf -y install \
         https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-43.noarch.rpm \
         https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-43.noarch.rpm
 
-# -----------------------------
-# Install CachyOS kernel and remove stock kernel/devel
-# -----------------------------
-RUN dnf -y copr enable bieszczaders/kernel-cachyos \
-    && dnf -y remove kernel kernel-core kernel-modules kernel-modules-core \
-                     kernel-devel kernel-headers || true \
-    && dnf -y install kernel-cachyos kernel-cachyos-devel-matched \
+# -------------------------------
+# Replace stock kernel with CachyOS
+# -------------------------------
+RUN dnf -y remove \
+         kernel kernel-core kernel-modules kernel-modules-core \
+         kernel-devel kernel-headers || true \
+    && dnf -y install \
+         kernel-cachyos kernel-cachyos-devel-matched \
+         linux-firmware dracut \
     && setsebool -P domain_kernel_load_modules on || true
 
 # -----------------------------
@@ -31,6 +33,14 @@ RUN dnf -y copr enable bieszczaders/kernel-cachyos \
 # -----------------------------
 COPY --from=ghcr.io/clarityos/kernel-cachyos-nvidia:latest /rpms/kmods/ /tmp/kmods/
 RUN dnf -y install /tmp/kmods/*.rpm
+
+# -------------------------------
+# Rebuild initramfs with LUKS + NVIDIA support
+# -------------------------------
+RUN KVER=$(rpm -q --qf "%{VERSION}-%{RELEASE}.%{ARCH}" kernel-cachyos | head -n1) && \
+    echo "Building initramfs for $KVER" && \
+    # crypt is usually added automatically, but we force it to be safe
+    dracut --force --kver "$KVER" --add crypt /boot/initramfs-"$KVER".img
 
 # -----------------------------
 # Run build script
