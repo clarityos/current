@@ -12,7 +12,7 @@ jobs:
       IMAGE_REPO: ghcr.io/clarityos
       IMAGE_NAME: current
       IMAGE_TAG: latest
-      VARIANT: current
+      VARIANT: main
 
     steps:
       - uses: actions/checkout@v3
@@ -42,4 +42,16 @@ jobs:
           image_tag: ${{ env.IMAGE_TAG }}
           version: ${{ steps.get_version.outputs.major_version }}
           variant: ${{ env.VARIANT }}
-          iso_name: clarityos-${{ env.VARIANT }}-${{ steps.get_version.outputs.major_version }}.iso
+          iso_name: clarityos-${{ env.IMAGE_NAME }}-${{ steps.get_version.outputs.major_version }}.iso
+
+      - name: Upload ISO as artifact
+        id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.build.outputs.iso_name }}
+          path: |
+            ${{ steps.build.outputs.iso_path }}
+            ${{ steps.build.outputs.iso_path }}-CHECKSUM
+          if-no-files-found: error
+          retention-days: 0
+          compression-level: 0
