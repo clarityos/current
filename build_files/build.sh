@@ -40,6 +40,8 @@ dnf5 -y remove kernel kernel-core kernel-modules kernel-modules-core || true
 
 echo "Installing CachyOS kernel..."
 dnf5 -y install kernel-cachyos kernel-cachyos-devel-matched
+# Allow user domains to load kernel modules (needed for CachyOS kernel)
+setsebool -P domain_kernel_load_modules on || true
 
 
 # -------------------------------------------------------------
