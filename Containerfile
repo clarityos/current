@@ -3,7 +3,8 @@ FROM scratch AS ctx
 COPY build_files /ctx
 
 # Stage 1: Base image
-FROM quay.io/fedora-ostree-desktops/kinoite:42
+ARG FEDORA_VERSION=42
+FROM quay.io/fedora-ostree-desktops/kinoite:${FEDORA_VERSION}
 
 # -----------------------------
 # Copy build scripts and files
@@ -11,16 +12,25 @@ FROM quay.io/fedora-ostree-desktops/kinoite:42
 COPY --from=ctx /ctx /ctx
 
 # -----------------------------
-# Add CachyOS kernel and NVIDIA akmods
+# Add RPM Fusion for NVIDIA support
 # -----------------------------
-# CachyOS kernel
+RUN dnf -y install \
+      https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-${FEDORA_VERSION}.noarch.rpm \
+      https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-${FEDORA_VERSION}.noarch.rpm \
+    && dnf clean all
+
+# -----------------------------
+# Add CachyOS kernel
+# -----------------------------
 RUN dnf -y copr enable bieszczaders/kernel-cachyos \
     && dnf -y remove kernel kernel-core kernel-modules kernel-modules-core || true \
     && dnf -y install kernel-cachyos kernel-cachyos-devel-matched \
     && setsebool -P domain_kernel_load_modules on || true
 
-# NVIDIA akmods
-COPY --from=ghcr.io/ublue-os/akmods-nvidia-open:main-42 / /tmp/akmods-nvidia
+# -----------------------------
+# Add NVIDIA akmods
+# -----------------------------
+COPY --from=ghcr.io/ublue-os/akmods-nvidia-open:main-${FEDORA_VERSION} / /tmp/akmods-nvidia
 RUN dnf -y install /tmp/akmods-nvidia/rpms/ublue-os/ublue-os-nvidia*.rpm \
     && dnf -y install /tmp/akmods-nvidia/rpms/kmods/kmod-nvidia*.rpm
 

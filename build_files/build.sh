@@ -32,12 +32,8 @@ dnf5 -y remove libreoffice\* kde-games\* kde-education\* plasma-welcome kate || 
 # -----------------------------
 # Flatpak
 # -----------------------------
-# Remove existing Fedora Flatpak repo if it exists
 flatpak remote-delete --force fedora || true
-
-# Add Flathub repository
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-
 flatpak install -y flathub com.brave.Browser
 
 # -----------------------------
