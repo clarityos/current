@@ -52,7 +52,7 @@ EOF
 
 # Replace upstream branding in /usr/lib/os-release too
 rm -f /usr/lib/os-release
-ln -s /etc/os-release /usr/lib/os-release || true
+cp /etc/os-release /usr/lib/os-release || true
 
 # -------------------------------------------------------------
 # 5️⃣ Graphics / Wallpaper
@@ -70,3 +70,7 @@ cp -r /ctx/skel/. /etc/skel/
 # 8️⃣ Plymouth Boot Watermark
 # -------------------------------------------------------------
 install -Dm644 /ctx/files/watermark.png /usr/share/plymouth/themes/spinner/watermark.png
+
+# Set GRUB distributor to ClarityOS
+sed -i 's/^GRUB_DISTRIBUTOR=.*/GRUB_DISTRIBUTOR="ClarityOS"/' /etc/default/grub || \
+    echo 'GRUB_DISTRIBUTOR="ClarityOS"' >> /etc/default/grub

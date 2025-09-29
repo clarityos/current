@@ -1,7 +1,3 @@
-# -------------------------------------------------------------
-# ClarityOS Minimal Installer ISO (fetches image from GHCR)
-# -------------------------------------------------------------
-
 [customizations.installer.kickstart]
 contents = """
 %post
