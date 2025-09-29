@@ -29,9 +29,8 @@ RUN dnf -y copr enable bieszczaders/kernel-cachyos \
 # -----------------------------
 # Install NVIDIA akmods after kernel is set
 # -----------------------------
-COPY --from=ghcr.io/ublue-os/akmods-nvidia-open:main-42 / /tmp/akmods-nvidia
-RUN dnf -y install /tmp/akmods-nvidia/rpms/ublue-os/ublue-os-nvidia*.rpm \
-    && dnf -y install /tmp/akmods-nvidia/rpms/kmods/kmod-nvidia*.rpm
+COPY --from=ghcr.io/clarityos/kernel-cachyos-nvidia:latest /rpms/kmods/ /tmp/kmods/
+RUN dnf -y install /tmp/kmods/*.rpm
 
 # -----------------------------
 # Run build script
