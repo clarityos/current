@@ -84,7 +84,6 @@ cp -r /ctx/skel/. /etc/skel/
 # Plymouth Boot Watermark
 # -----------------------------
 install -Dm644 /ctx/files/watermark.png /usr/share/plymouth/themes/spinner/watermark.png
-plymouth-set-default-theme -R spinner
 
 # -----------------------------
 # GRUB Branding
